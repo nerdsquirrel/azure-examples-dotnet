@@ -6,6 +6,9 @@ using Azure.Storage.Blobs.Models;
 
 namespace AzureStorage.BlobStorageService
 {
+    // https://github.com/Azure/azure-sdk-for-net/tree/Azure.Storage.Blobs_12.6.0/sdk/storage/Azure.Storage.Blobs/samples
+    // https://docs.microsoft.com/en-us/dotnet/api/overview/azure/storage.blobs-readme
+    // https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet
     public class BlobStorageService : IBlobStorageService
     {
         readonly BlobContainerClient _blobContainerClient;
@@ -56,7 +59,7 @@ namespace AzureStorage.BlobStorageService
             try
             {
                 var downloadInfo = await blobClient.DownloadAsync();
-                using (FileStream file = File.OpenWrite(downloadPath))
+                using (var file = File.OpenWrite(downloadPath))
                 {
                     await downloadInfo.Value.Content.CopyToAsync(file);
                     return true;
