@@ -6,10 +6,11 @@ namespace AzureRedisCache.Repository
 {
     public interface IAzureCacheRepository
     {
-        Result<string> GetValue(string key);
-        Result<byte[]> GetBinaryValue(string key);
-        Result<bool> SetCache(string key, string value, TimeSpan? expiry);
-        Result<bool> SetCache(string key, byte[] value, TimeSpan? expiry);
+        Task<Result<string>> GetValueAsync(string key);
+        Task<Result<byte[]>> GetBinaryValueAsync(string key);
+        Task<Result<bool>> SetCacheAsync(string key, string value, TimeSpan? expiry);
+        Task<Result<bool>> SetCacheAsync(string key, byte[] value, TimeSpan? expiry);
         Task<Result<bool>> IsKeyExistsAsync(string key);
+        Task<Result<bool>> RemoveKeyAsync(string key);
     }
 }

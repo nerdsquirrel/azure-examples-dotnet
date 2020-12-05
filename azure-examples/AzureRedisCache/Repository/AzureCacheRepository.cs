@@ -15,53 +15,70 @@ namespace AzureRedisCache.Repository
             _lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect("secret-key"));
         }
 
-        public Result<string> GetValue(string key)
+        public async Task<Result<string>> GetValueAsync(string key)
         {
             try
             {
-                return Result.Ok<string>(MultiplexerDatabase.StringGet(key));
+                return Result.Ok<string>(await MultiplexerDatabase.StringGetAsync(key));
             }
             catch (Exception ex)
             {
-                return Result.Fail<string>($"Error getting value from azure cache. Exception: {ex.Message}");
+                _logger.Log(new SFCommonException($"Error getting value from azure cache.{ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<string>("Error getting value from azure cache");
             }
         }
 
-        public Result<byte[]> GetBinaryValue(string key)
+        public async Task<Result<byte[]>> GetBinaryValueAsync(string key)
         {
             try
             {
-                return Result.Ok<byte[]>(MultiplexerDatabase.StringGet(key));
+                return Result.Ok<byte[]>(await MultiplexerDatabase.StringGetAsync(key));
             }
             catch (Exception ex)
             {
-                return Result.Fail<byte[]>($"Error getting value from azure cache. Exception: {ex.Message}");
+                _logger.Log(new SFCommonException($"Error getting value from azure cache.{ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<byte[]>("Error getting value from azure cache");
             }
         }
 
-        public Result<bool> SetCache(string key, string value, TimeSpan? expiry)
+        public async Task<Result<bool>> SetCacheAsync(string key, string value, TimeSpan? expiry)
         {
             try
             {
-                return Result.Ok(MultiplexerDatabase.StringSet(key, value, expiry));
+                return Result.Ok(await MultiplexerDatabase.StringSetAsync(key, value, expiry));
             }
             catch (Exception ex)
             {
-                return Result.Fail<bool>($"Error to set value in azure cache. Exception: {ex.Message}");
+                _logger.Log(new SFCommonException($"Error to set value in azure cache. {ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<bool>("Error to set value in azure cache.");
             }
         }
 
-        public Result<bool> SetCache(string key, byte[] value, TimeSpan? expiry)
+        public async Task<Result<bool>> SetCacheAsync(string key, byte[] value, TimeSpan? expiry)
         {
             try
             {
-                return Result.Ok(MultiplexerDatabase.StringSet(key, value, expiry));
+                return Result.Ok(await MultiplexerDatabase.StringSetAsync(key, value, expiry));
             }
             catch (Exception ex)
             {
-                return Result.Fail<bool>($"Error to set value in azure cache. Exception: {ex.Message}");
+                _logger.Log(new SFCommonException($"Error to set value in azure cache. {ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<bool>("Error to set value in azure cache.");
             }
         }
+
+        public async Task<Result<bool>> RemoveKeyAsync(string key)
+        {
+            try
+            {
+                return Result.Ok(await MultiplexerDatabase.KeyDeleteAsync(key));
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(new SFCommonException($"Error to remove key from azure cache. {ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<bool>("Error to remove key from azure cache.");
+            }
+        }        
 
         public async Task<Result<bool>> IsKeyExistsAsync(string key)
         {
@@ -71,7 +88,8 @@ namespace AzureRedisCache.Repository
             }
             catch (Exception ex)
             {
-                return Result.Fail<bool>($"Error to communicate with azure cache. Exception: {ex.Message}");
+                _logger.Log(new SFCommonException($"Error to communicate with azure cache. {ex.GetExceptionDetailMessage()}", ex));
+                return Result.Fail<bool>("Error to communicate with azure cache.");
             }
         }
 
